@@ -1,0 +1,131 @@
+/* Footer Container */
+.footer {
+  background: #1a1a1a;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  padding: 30px 20px;
+  gap: 25px;
+  width: 100%;
+}
+
+/* Top container for left and right sections */
+.footer-top {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+/* Left Section */
+.footer-left {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.footer-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.footer-left p {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  opacity: 0.9;
+  font-size: 15px;
+}
+
+.footer-left .icon {
+  color: #f8b400;
+}
+
+/* Links */
+.map-link {
+  color: #f8b400;
+  text-decoration: none;
+}
+
+.map-link:hover {
+  text-decoration: underline;
+}
+
+/* Right Section - Icons */
+.footer-right {
+  display: flex;
+  gap: 20px;
+}
+
+.social {
+  font-size: 20px;
+  color: white;
+  background: #333;
+  padding: 10px;
+  border-radius: 50%;
+  transition: 0.3s;
+}
+
+.social:hover {
+  background: #f8b400;
+  color: #1a1a1a;
+}
+
+/* Copyright */
+.footer-copy {
+  text-align: center;
+  font-size: 14px;
+  opacity: 0.8;
+  border-top: 1px solid #444;
+  padding-top: 15px;
+  margin-top: 10px;
+}
+
+/* 🌐 RESPONSIVE DESIGN */
+
+/* Tablets and Desktop */
+@media (min-width: 600px) {
+  .footer-top {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .footer-copy {
+    text-align: center;
+    margin-top: 20px;
+  }
+}
+
+/* Desktop large screens */
+@media (min-width: 1024px) {
+  .footer {
+    padding: 40px 80px;
+  }
+
+  .footer-title {
+    font-size: 24px;
+  }
+}
+
+/* Mobile — center all text */
+@media (max-width: 599px) {
+  .footer-top {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .footer-left {
+    text-align: center;
+    align-items: center;
+  }
+
+  .footer-right {
+    justify-content: center;
+  }
+
+  .footer-left p {
+    justify-content: center;
+  }
+}

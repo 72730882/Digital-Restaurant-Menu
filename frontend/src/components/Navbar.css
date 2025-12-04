@@ -1,0 +1,122 @@
+/* Remove horizontal overflow from whole page */
+body, html {
+  overflow-x: hidden;
+}
+
+/* ---------- MAIN WRAPPER ---------- */
+.explore-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0 1.5rem; /* Default mobile padding */
+}
+
+@media (min-width: 768px) {
+  .explore-menu {
+    padding: 0 3rem; /* Tablet padding */
+  }
+}
+
+@media (min-width: 1024px) {
+  .explore-menu {
+    padding: 0 5rem; /* Desktop padding */
+  }
+}
+
+.explore-menu h1 {
+  margin-top: 30px;
+  color: #262626;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* ---------- CATEGORY LIST ---------- */
+.explore-menu-list {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  text-align: center;
+  margin: 20px 0px;
+  overflow-x: auto;        /* Mobile scroll */
+  white-space: nowrap;
+  justify-content: flex-start;
+}
+
+/* Hide scrollbar everywhere */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.explore-menu-list::-webkit-scrollbar {
+  display: none;
+}
+
+/* Category Image */
+.explore-menu-list-item img {
+  width: 70px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+/* Line under navbar */
+.explore-menu hr {
+  margin: 10px 0px;
+  height: 2px;
+  background-color: #e2e2e2;
+  border: none;
+}
+
+/* ===========================================================
+   📱 TABLET RESPONSIVE (600px – 900px)
+   =========================================================== */
+@media (min-width: 600px) and (max-width: 900px) {
+  .explore-menu-list {
+    gap: 25px;
+    flex-wrap: wrap;         /* Switch from scroll to wrap */
+    justify-content: center; /* Center items */
+    overflow-x: visible;     /* Remove scrolling */
+  }
+
+  .explore-menu-list-item img {
+    width: 80px;
+    height: 80px;
+  }
+
+  .explore-menu-list-item p {
+    font-size: 15px;
+  }
+}
+
+/* ===========================================================
+   🖥️ DESKTOP RESPONSIVE (900px+)
+   =========================================================== */
+@media (min-width: 900px) {
+  .explore-menu-list {
+    gap: 35px;
+    flex-wrap: wrap;          /* Grid look */
+    justify-content: center;  /* Center categories */
+    overflow-x: visible;      /* No scroll */
+    max-width: 1100px;        /* Limit width for clean UI */
+    margin: auto;
+  }
+
+  .explore-menu-list-item {
+    min-width: 120px;
+  }
+
+  .explore-menu-list-item img {
+    width: 90px;
+    height: 90px;
+  }
+
+  .explore-menu-list-item p {
+    font-size: 16px;
+    font-weight: 500;
+  }
+}
