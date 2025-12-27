@@ -1,86 +1,112 @@
+/* ---------- HOME CONTAINER ---------- */
 .home-container {
   padding: 20px;
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  background-color: #fafafa;
 }
 
+/* ---------- MOVABLE BACKGROUND SHAPES ---------- */
+.home-bg-decor {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.decor-circle {
+  position: absolute;
+  border-radius: 50%;
+  border: 35px solid #ff4500;
+  opacity: 0.04;
+}
+.circle-1 { width: 450px; height: 450px; top: -5%; left: -5%; }
+.circle-2 { width: 350px; height: 350px; bottom: 5%; right: -5%; border-color: #262626; }
+
+.bullet { position: absolute; border-radius: 50%; background: #ff4500; opacity: 0.08; }
+.b1 { width: 100px; height: 100px; top: 15%; left: 10%; }
+.b2 { width: 60px; height: 60px; top: 60%; right: 15%; }
+.b3 { width: 150px; height: 150px; bottom: 10%; left: 25%; background: #262626; }
+
+/* ---------- TITLE STYLE ---------- */
 .title {
-  font-size: 22px;
-  font-weight: bold;
-  margin-bottom: 20px;
+  margin-top: 5px;
+  margin-bottom: 25px;
+  font-weight: 700;
   text-align: center;
+  font-family: 'Poppins', sans-serif;
+  text-transform: uppercase;
+  font-size: 1.6rem;
+  background: linear-gradient(45deg, #262626, #ff4500);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  position: relative;
+  z-index: 1;
 }
 
-/* Responsive Grid */
+/* ---------- CARDS GRID ---------- */
 .cards-grid {
+  position: relative;
+  z-index: 1;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);  /* mobile */
-  gap: 20px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  max-width: 1300px;
+  margin: 0 auto;
 }
 
-@media (min-width: 768px) {
-  .cards-grid {
-    grid-template-columns: repeat(4, 1fr); /* tablet */
-  }
-}
-
-@media (min-width: 1024px) {
-  .cards-grid {
-    grid-template-columns: repeat(6, 1fr); /* desktop */
-  }
-}
-
-/* Card */
+/* ---------- CARD SIZE & STYLE (RESTORED) ---------- */
 .card {
-  background: white;
-  border-radius: 14px;
-  padding: 12px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  text-align: center;
-  transition: 0.2s;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  padding: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  display: flex;
+  flex-direction: column;
 }
 
-.card:hover {
-  transform: translateY(-4px);
+.image-wrapper {
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  aspect-ratio: 1 / 1; 
 }
 
-/* Image */
 .card-img {
   width: 100%;
-  height: 130px;          /* FIXED HEIGHT so it doesn’t stretch */
-  object-fit: cover;      /* keeps image shape */
-  border-radius: 10px;
+  height: 100%;
+  object-fit: cover;
+}
+
+.price-tag {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #ff4500;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.75rem;
 }
 
 .card-title {
-  font-weight: 600;
+  font-size: 1rem;
+  font-weight: 700;
   margin-top: 10px;
+  color: #262626;
+  padding: 0 4px;
 }
 
-.card-price {
-  color: #555;
-  margin-top: 4px;
-}
-.no-items-text {
-  text-align: center;
-  font-size: 18px;
-  margin: 20px 0;
-  color: #888;
-}
-.title-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+/* RESPONSIVE QUERIES */
+@media (min-width: 768px) {
+  .cards-grid { grid-template-columns: repeat(4, 1fr); gap: 25px; }
+  .title { font-size: 2.4rem; }
 }
 
-.all-items-btn {
-  padding: 6px 12px;
-  background: #0077ff;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.all-items-btn:hover {
-  background: #005fcc;
+@media (min-width: 1024px) {
+  .cards-grid { grid-template-columns: repeat(5, 1fr); }
 }

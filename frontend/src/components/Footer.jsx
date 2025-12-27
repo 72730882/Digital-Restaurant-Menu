@@ -12,12 +12,11 @@ import "./Footer.css";
 const Footer = () => {
   return (
     <footer className="footer">
-      {/* TOP: Left Text & Right Social */}
       <div className="footer-top">
-        {/* LEFT */}
+        {/* LEFT SECTION */}
         <div className="footer-left">
-          <p><FaMapMarkerAlt className="icon" /> Addis Ababa, Ethiopia</p>
-          <p><FaPhoneAlt className="icon" /> +251 912 345 678</p>
+          <p><FaMapMarkerAlt className="icon" /> Adama, Ethiopia</p>
+          <p><FaPhoneAlt className="icon" /> +251 972 720 882</p>
           <p><FaEnvelope className="icon" /> info@naflet-hotel.com</p>
           <p>
             <FaMapMarkedAlt className="icon" />
@@ -32,7 +31,7 @@ const Footer = () => {
           </p>
         </div>
 
-        {/* RIGHT */}
+        {/* RIGHT SECTION */}
         <div className="footer-right">
           <a href="#" className="social"><FaFacebookF /></a>
           <a href="#" className="social"><FaTiktok /></a>
@@ -40,9 +39,8 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* COPYRIGHT */}
       <div className="footer-copy">
-        © {new Date().getFullYear()} Faiza Mohammed. All Rights Reserved.
+        © {new Date().getFullYear()}  Naflet Hotel. All rights reserved.
       </div>
     </footer>
   );

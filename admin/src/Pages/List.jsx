@@ -97,49 +97,42 @@ const List = ({ token }) => {
 
   // Save edited food
   const saveEdit = async () => {
-    try {
-      setIsUploading(true);
+  try {
+    setIsUploading(true);
 
-      let imageToSend = editingFood.image;
+    const formData = new FormData();
+    formData.append("id", editingFood._id);
+    formData.append("name", updatedData.name);
+    formData.append("category", updatedData.category);
+    formData.append("price", updatedData.price);
 
-      // Convert selected image to Base64 if new file chosen
-      if (newImageFile) {
-        imageToSend = await toBase64(newImageFile);
-      }
-
-      const payload = {
-        id: editingFood._id,
-        name: updatedData.name,
-        category: updatedData.category,
-        price: updatedData.price,
-        image: imageToSend,
-        imagePublicId: editingFood.imagePublicId || "",
-      };
-
-      const response = await axios.post(
-        `${backendUrl}/api/food/update`,
-        payload,
-        {
-          headers: { token },
-        }
-      );
-
-      setIsUploading(false);
-
-      if (response.data.success) {
-        toast.success("Food updated successfully!");
-        setEditingFood(null);
-        fetchList();
-      } else {
-        toast.error(response.data.message);
-      }
-    } catch (error) {
-      console.error(error);
-      setIsUploading(false);
-      toast.error("Failed to update food");
+    // ONLY append the actual file object if a new one was selected
+    if (newImageFile) {
+      formData.append("image", newImageFile);
     }
-  };
 
+    const response = await axios.post(`${backendUrl}/api/food/update`, formData, {
+      headers: { 
+        token,
+        "Content-Type": "multipart/form-data" 
+      },
+    });
+
+    setIsUploading(false);
+    if (response.data.success) {
+      toast.success("Food updated successfully!");
+      setEditingFood(null);
+      setNewImageFile(null);
+      fetchList();
+    } else {
+      toast.error(response.data.message);
+    }
+  } catch (error) {
+    setIsUploading(false);
+    console.error(error);
+    toast.error("Failed to update food");
+  }
+};
   useEffect(() => {
     fetchList();
     fetchCategories();

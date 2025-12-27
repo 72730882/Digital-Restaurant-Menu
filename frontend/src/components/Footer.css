@@ -4,12 +4,14 @@
   color: #ffffff;
   display: flex;
   flex-direction: column;
-  padding: 30px 20px;
-  gap: 25px;
+  padding: 25px 60px; /* Minimized padding */
+  gap: 20px;
   width: 100%;
+  border-top: 2px solid #ff4500;
+  font-family: 'Poppins', sans-serif;
 }
 
-/* Top container for left and right sections */
+/* Top container */
 .footer-top {
   display: flex;
   justify-content: space-between;
@@ -17,115 +19,90 @@
   gap: 20px;
 }
 
-/* Left Section */
+/* Left Section - Always Left Aligned */
 .footer-left {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-}
-
-.footer-title {
-  font-size: 20px;
-  font-weight: bold;
-  margin-bottom: 10px;
+  gap: 10px; /* Tighter gap */
+  text-align: left;
 }
 
 .footer-left p {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 12px;
   opacity: 0.9;
-  font-size: 15px;
+  font-size: 14px; /* Slightly smaller text */
 }
 
 .footer-left .icon {
-  color: #f8b400;
+  color: #ff4500;
+  font-size: 16px;
 }
 
-/* Links */
 .map-link {
-  color: #f8b400;
+  color: #ff4500;
   text-decoration: none;
+  font-weight: 500;
 }
 
-.map-link:hover {
-  text-decoration: underline;
-}
-
-/* Right Section - Icons */
+/* Right Section - Social Icons */
 .footer-right {
   display: flex;
-  gap: 20px;
+  gap: 12px;
+  align-items: center;
+  justify-content: flex-start; /* Ensure left alignment on wrap */
 }
 
 .social {
-  font-size: 20px;
+  font-size: 16px;
   color: white;
   background: #333;
-  padding: 10px;
+  width: 38px; /* Minimized icon size */
+  height: 38px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   border-radius: 50%;
-  transition: 0.3s;
+  transition: all 0.3s ease;
 }
 
 .social:hover {
-  background: #f8b400;
-  color: #1a1a1a;
+  background: #ff4500;
+  transform: translateY(-3px);
 }
 
-/* Copyright */
+/* Copyright Section - Lowercase/Normal Case */
 .footer-copy {
-  text-align: center;
-  font-size: 14px;
-  opacity: 0.8;
-  border-top: 1px solid #444;
+  text-align: left; /* Aligned left */
+  font-size: 13px;
+  opacity: 0.5;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
   padding-top: 15px;
-  margin-top: 10px;
+  margin-top: 5px;
+  text-transform: none; /* Removed uppercase */
 }
 
 /* 🌐 RESPONSIVE DESIGN */
 
-/* Tablets and Desktop */
-@media (min-width: 600px) {
-  .footer-top {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: flex-start;
-  }
-
-  .footer-copy {
-    text-align: center;
-    margin-top: 20px;
-  }
-}
-
-/* Desktop large screens */
-@media (min-width: 1024px) {
+@media (min-width: 768px) {
   .footer {
-    padding: 40px 80px;
-  }
-
-  .footer-title {
-    font-size: 24px;
+    padding: 30px 5rem;
   }
 }
 
-/* Mobile — center all text */
+/* Mobile — Force left alignment */
 @media (max-width: 599px) {
   .footer-top {
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start; /* Keep items to the left */
   }
 
   .footer-left {
-    text-align: center;
-    align-items: center;
-  }
-
-  .footer-right {
-    justify-content: center;
+    align-items: flex-start;
   }
 
   .footer-left p {
-    justify-content: center;
+    justify-content: flex-start;
   }
 }

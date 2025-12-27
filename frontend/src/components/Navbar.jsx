@@ -16,7 +16,7 @@ const Navbar = ({ setSelectedCategory }) => {
 
   return (
     <div className="explore-menu">
-      <h1>Naflet Hotel Digital Menu</h1>
+      <h1>WelCome TO Naflet Hotel </h1>
 
       <div className="explore-menu-list no-scrollbar">
 

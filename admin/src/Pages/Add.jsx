@@ -10,27 +10,15 @@ const Add = ({ token }) => {
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [category, setCategory] = useState("");
-  const [categories, setCategories] = useState([]); // ← NEW
+  const [categories, setCategories] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
 
-  // Convert file → Base64
-  const convertToBase64 = (file) =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = (error) => reject(error);
-    });
-
-  // 🔥 Fetch categories from backend
+  // Fetch categories from backend
   const fetchCategories = async () => {
     try {
       const response = await axios.get(`${backendUrl}/api/category/list`);
-      if (response.data.success) {
-        setCategories(response.data.data);
-      } else {
-        toast.error("Failed to load categories");
-      }
+      if (response.data.success) setCategories(response.data.data);
+      else toast.error("Failed to load categories");
     } catch (error) {
       console.error("Fetch Categories Error:", error);
     }
@@ -42,33 +30,24 @@ const Add = ({ token }) => {
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
-    if (!image) {
-      toast.error("Please upload an image");
-      return;
-    }
-
-    if (!category) {
-      toast.error("Please select a category");
-      return;
-    }
+    if (!image) return toast.error("Please upload an image");
+    if (!category) return toast.error("Please select a category");
 
     try {
       setIsUploading(true);
 
-      // Convert image to Base64
-      const base64Image = await convertToBase64(image);
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("price", price);
+      formData.append("category", category);
+      formData.append("image", image);
 
-      // Send to backend
-      const response = await axios.post(
-        `${backendUrl}/api/food/add`,
-        {
-          name,
-          price,
-          category, // category ID
-          image: base64Image,
+      const response = await axios.post(`${backendUrl}/api/food/add`, formData, {
+        headers: {
+          token,
+          "Content-Type": "multipart/form-data",
         },
-        { headers: { token } }
-      );
+      });
 
       setIsUploading(false);
 
@@ -78,12 +57,10 @@ const Add = ({ token }) => {
         setPrice("");
         setCategory("");
         setImage(null);
-      } else {
-        toast.error(response.data.message);
-      }
+      } else toast.error(response.data.message);
     } catch (error) {
       setIsUploading(false);
-      console.error("Add Food Error:", error);
+      console.error(error);
       toast.error("Error adding food");
     }
   };
@@ -112,14 +89,8 @@ const Add = ({ token }) => {
             />
           ) : (
             <>
-              <img
-                src={assets.upload_area}
-                alt="Upload icon"
-                className="w-10 opacity-70"
-              />
-              <p className="text-sm text-gray-500 mt-2">
-                Click to upload food image
-              </p>
+              <img src={assets.upload_area} alt="Upload icon" className="w-10 opacity-70" />
+              <p className="text-sm text-gray-500 mt-2">Click to upload food image</p>
             </>
           )}
           <input
@@ -146,7 +117,7 @@ const Add = ({ token }) => {
         />
       </div>
 
-      {/* CATEGORY DROPDOWN FROM BACKEND */}
+      {/* Category Dropdown */}
       <div>
         <p className="mb-2 font-semibold">Category</p>
         <select
@@ -156,7 +127,6 @@ const Add = ({ token }) => {
           required
         >
           <option value="">Select Category</option>
-
           {categories.map((cat) => (
             <option key={cat._id} value={cat._id}>
               {cat.name}
@@ -178,7 +148,7 @@ const Add = ({ token }) => {
         />
       </div>
 
-      {/* Submit Button */}
+      {/* Submit */}
       <button
         type="submit"
         disabled={isUploading}

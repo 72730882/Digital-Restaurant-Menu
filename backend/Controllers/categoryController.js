@@ -4,16 +4,16 @@ import { v2 as cloudinary } from "cloudinary";
 // ADD CATEGORY
 const addCategory = async (req, res) => {
   try {
-    const { name, image } = req.body;   // text field
-           // uploaded file
+    const { name, image } = req.body; // image should be Base64
 
-     if (!image) {
+    if (!image) {
       return res.json({ success: false, message: "Image is required" });
     }
 
+    // Upload image to Cloudinary
     const result = await cloudinary.uploader.upload(image, { folder: "categories" });
 
-    const category = await categoryModel({
+    const category = new categoryModel({
       name,
       image: result.secure_url,
       imagePublicId: result.public_id,
@@ -24,7 +24,7 @@ const addCategory = async (req, res) => {
     res.json({ success: true, message: "Category added successfully", data: category });
   } catch (error) {
     console.error(error);
-    res.json({ success: false, message: "Error adding category" });
+    res.json({ success: false, message: "Category alredy Added" });
   }
 };
 
@@ -74,7 +74,7 @@ const updateCategory = async (req, res) => {
     let newImagePublicId = imagePublicId;
 
     // If new image is Base64
-    if (typeof image === "string" && image.startsWith("data:image")) {
+    if (image && typeof image === "string" && image.startsWith("data:image")) {
       const uploadRes = await cloudinary.uploader.upload(image, { folder: "categories" });
 
       // Delete old image if exists

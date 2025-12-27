@@ -26,6 +26,10 @@ app.get("/", (req, res) => {
   res.send("Restaurant Menu API is running...");
 });
 
+// Add these lines before your routes
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
 // api endpoints
 app.use("/api/food", foodRouter)
 app.use("/images", express.static('uploads'))
