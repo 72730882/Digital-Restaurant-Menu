@@ -2,33 +2,56 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Your custom styles (optional) */
+/* 1. FORCE LIGHT MODE AT THE BROWSER LEVEL */
 :root {
-  /* This tells the browser the app is light mode only */
-  color-scheme: light;
+  color-scheme: light !important;
 }
-* {
-  padding: 0;
+
+/* 2. THE NUCLEAR RESET - Stops dark mode "bleed through" */
+html, 
+body, 
+#root {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+  color: #262626 !important;
   margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* 3. ENSURE ALL TEXT IS DARK */
+h1, h2, h3, h4, p, span, div {
+  color: #262626 !important;
+}
+
+* {
   box-sizing: border-box;
 }
 
+/* 4. LAYOUT STYLES */
 body {
-  min-height: 100vh;
-  background-color: #fff;
   font-family: 'Inter', sans-serif;
-  background-color: #ffffff !important;
-  color: #262626 !important;
+  -webkit-font-smoothing: antialiased;
 }
+
+#root {
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
 .home-container {
   background-color: #ffffff !important;
+  flex: 1;
 }
 
 a {
   text-decoration: none;
   color: inherit;
 }
-/* Hide horizontal scrollbar for navbar scroll */
+
+/* 5. SCROLLBARS */
 .no-scrollbar {
   -ms-overflow-style: none;  /* IE + Edge */
   scrollbar-width: none;     /* Firefox */
@@ -36,8 +59,4 @@ a {
 
 .no-scrollbar::-webkit-scrollbar {
   display: none;             /* Chrome, Safari, Opera */
-}
-
-#root {
-  overflow-x: hidden;
 }

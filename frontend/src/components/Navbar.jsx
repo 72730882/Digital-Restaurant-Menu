@@ -2,18 +2,16 @@ import React, { useEffect, useState } from "react";
 import "./Navbar.css";
 import axios from "axios";
 import allImage from "../assets/all.png";
+// eslint-disable-next-line no-unused-vars
+import { motion } from "framer-motion";
 
 const Navbar = ({ setSelectedCategory }) => {
   const [categories, setCategories] = useState([]);
   const url = import.meta.env.VITE_BACKEND_URL;
 
-  // Function to make images load 10x faster
   const getOptimizedIcon = (imageUrl) => {
     if (!imageUrl) return "";
     if (imageUrl.includes("cloudinary.com")) {
-      // w_200: small size for icons
-      // q_auto: best compression
-      // f_auto: best format (WebP)
       return imageUrl.replace("/upload/", "/upload/w_200,q_auto,f_auto/");
     }
     return imageUrl;
@@ -28,7 +26,18 @@ const Navbar = ({ setSelectedCategory }) => {
 
   return (
     <div className="explore-menu">
-      <h1>WelCome TO Naflet Hotel </h1>
+      {/* Floating Animation for Title */}
+      <motion.h1
+        animate={{ y: [0, -8, 0] }}
+        transition={{
+          duration: 3,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      >
+        WelCome TO Naflet Hotel
+      </motion.h1>
+
       <div className="explore-menu-list no-scrollbar">
         <div
           className="explore-menu-list-item"
@@ -46,11 +55,10 @@ const Navbar = ({ setSelectedCategory }) => {
             onClick={() => setSelectedCategory(cat.name)}
             style={{ cursor: "pointer" }}
           >
-            {/* Added optimization and lazy loading */}
             <img 
               src={getOptimizedIcon(cat.image)} 
               alt={cat.name} 
-              loading="lazy"
+              loading="lazy" 
             />
             <p>{cat.name}</p>
           </div>

@@ -1,8 +1,7 @@
 /* ===========================================================
-   GLOBAL RESET & MOBILE LOCKS
+   GLOBAL RESET & DARK MODE PREVENTION
    =========================================================== */
 :root {
-  /* Forces the browser to ignore System Dark Mode */
   color-scheme: light !important;
 }
 
@@ -10,7 +9,6 @@ body, html {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
-  /* Ensures no accidental dark background on mobile */
   background-color: #ffffff !important;
   color: #262626 !important;
   font-family: 'Poppins', sans-serif;
@@ -28,39 +26,37 @@ body, html {
   z-index: 10;
 }
 
-/* Beautiful H1 Header */
 .explore-menu h1 {
   margin-top: 20px;
   font-weight: 800;
   text-align: center;
   letter-spacing: -1px;
   text-transform: uppercase;
-  font-size: 1.7rem;
-  /* Gradient Text Effect */
+  font-size: 1.5rem; /* Adjusted for mobile */
   background: linear-gradient(45deg, #262626, #ff4500);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  display: block;
 }
 
 /* ===========================================================
-   CATEGORY LIST (HORIZONTAL SCROLL)
+   CATEGORY LIST (MOBILE FIRST)
    =========================================================== */
 .explore-menu-list {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px; /* Reduced gap for mobile */
   text-align: center;
   margin: 10px 0px;
   overflow-x: auto;
   white-space: nowrap;
   flex-wrap: nowrap;
   justify-content: flex-start;
-  padding: 15px 5px; /* Space for the hover zoom effect */
+  padding: 10px 2px; 
   overflow-y: hidden;
-  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  -webkit-overflow-scrolling: touch;
 }
 
-/* Hide Scrollbars */
 .no-scrollbar::-webkit-scrollbar,
 .explore-menu-list::-webkit-scrollbar {
   display: none;
@@ -72,78 +68,42 @@ body, html {
 }
 
 /* ===========================================================
-   CATEGORY ITEM STYLE
+   CATEGORY ITEM STYLE (MOBILE SIZE)
    =========================================================== */
 .explore-menu-list-item {
   flex: 0 0 auto;
   cursor: pointer;
-  padding: 5px;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
 .explore-menu-list-item img {
-  width: 70px;
-  height: 70px;
+  width: 80px;  /* Increased circle size for phone */
+  height: 80px; /* Increased circle size for phone */
   object-fit: cover;
   border-radius: 50%;
   border: 2px solid #f0f0f0;
-  transform-origin: center;
-  transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease;
   display: block;
-  backface-visibility: hidden;
-  background-color: #f9f9f9; /* Fallback while loading */
 }
 
-/* Zoom Hover Effect */
 .explore-menu-list-item:hover img {
-  transform: scale(1.12);
   border: 2px solid #ff4500;
-  box-shadow: 0px 4px 15px rgba(255, 69, 0, 0.2);
-}
-
-/* Click Feedback */
-.explore-menu-list-item:active img {
-  transform: scale(0.95);
 }
 
 .explore-menu-list-item p {
-  margin-top: 10px;
-  color: #444444; /* Dark gray for readability */
-  font-size: 14px;
+  margin-top: 8px;
+  color: #444444;
+  font-size: 13px; /* Slightly smaller text for compact feel */
   font-weight: 600;
-  margin-bottom: 0;
 }
 
-/* Line under navbar */
 .explore-menu hr {
   margin: 5px 0px;
-  height: 2px;
+  height: 1.5px;
   background-color: #f0f0f0;
   border: none;
-}
-
-/* ===========================================================
-   📱 TABLET RESPONSIVE (600px – 900px)
-   =========================================================== */
-@media (min-width: 600px) and (max-width: 900px) {
-  .explore-menu {
-    padding: 0 1.5rem;
-  }
-  
-  .explore-menu-list {
-    gap: 20px;
-  }
-
-  .explore-menu-list-item img {
-    width: 85px;
-    height: 85px;
-  }
-
-  .explore-menu h1 {
-    font-size: 2rem;
-  }
 }
 
 /* ===========================================================
@@ -154,22 +114,22 @@ body, html {
     padding: 0 5rem;
   }
 
+  .explore-menu h1 {
+    font-size: 2.5rem;
+    margin-top: 30px;
+  }
+
   .explore-menu-list {
-    gap: 35px;
-    justify-content: center; /* Center items on large screens */
+    gap: 30px; /* Wider gap for desktop */
+    justify-content: center;
   }
 
   .explore-menu-list-item img {
-    width: 100px;
-    height: 100px;
+    width: 110px;
+    height: 110px;
   }
 
   .explore-menu-list-item p {
     font-size: 16px;
-  }
-
-  .explore-menu h1 {
-    font-size: 2.5rem;
-    margin-top: 30px;
   }
 }
