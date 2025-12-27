@@ -5,8 +5,19 @@ import allImage from "../assets/all.png";
 
 const Navbar = ({ setSelectedCategory }) => {
   const [categories, setCategories] = useState([]);
-  // Pull the base URL from .env
   const url = import.meta.env.VITE_BACKEND_URL;
+
+  // Function to make images load 10x faster
+  const getOptimizedIcon = (imageUrl) => {
+    if (!imageUrl) return "";
+    if (imageUrl.includes("cloudinary.com")) {
+      // w_200: small size for icons
+      // q_auto: best compression
+      // f_auto: best format (WebP)
+      return imageUrl.replace("/upload/", "/upload/w_200,q_auto,f_auto/");
+    }
+    return imageUrl;
+  };
 
   useEffect(() => {
     axios
@@ -35,7 +46,12 @@ const Navbar = ({ setSelectedCategory }) => {
             onClick={() => setSelectedCategory(cat.name)}
             style={{ cursor: "pointer" }}
           >
-            <img src={cat.image} alt={cat.name} />
+            {/* Added optimization and lazy loading */}
+            <img 
+              src={getOptimizedIcon(cat.image)} 
+              alt={cat.name} 
+              loading="lazy"
+            />
             <p>{cat.name}</p>
           </div>
         ))}

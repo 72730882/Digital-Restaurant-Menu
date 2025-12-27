@@ -1,34 +1,38 @@
-/* Remove horizontal overflow from whole page */
-body, html {
-  overflow-x: hidden;
+/* ===========================================================
+   GLOBAL RESET & MOBILE LOCKS
+   =========================================================== */
+:root {
+  /* Forces the browser to ignore System Dark Mode */
+  color-scheme: light !important;
 }
 
-/* ---------- MAIN WRAPPER ---------- */
+body, html {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  /* Ensures no accidental dark background on mobile */
+  background-color: #ffffff !important;
+  color: #262626 !important;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* ===========================================================
+   MAIN NAVBAR WRAPPER
+   =========================================================== */
 .explore-menu {
   display: flex;
   flex-direction: column;
-  
   padding: 0 0.5rem;
-}
-
-@media (min-width: 768px) {
-  .explore-menu {
-    padding: 0 1rem;
-  }
-}
-
-@media (min-width: 1024px) {
-  .explore-menu {
-    padding: 0 5rem;
-  }
+  background-color: #ffffff;
+  position: relative;
+  z-index: 10;
 }
 
 /* Beautiful H1 Header */
 .explore-menu h1 {
-  margin-top: 14px;
+  margin-top: 20px;
   font-weight: 800;
   text-align: center;
-  font-family: 'Poppins', sans-serif;
   letter-spacing: -1px;
   text-transform: uppercase;
   font-size: 1.7rem;
@@ -38,41 +42,45 @@ body, html {
   -webkit-text-fill-color: transparent;
 }
 
-/* ---------- CATEGORY LIST CONTAINER ---------- */
+/* ===========================================================
+   CATEGORY LIST (HORIZONTAL SCROLL)
+   =========================================================== */
 .explore-menu-list {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   text-align: center;
-  margin: 5px 0px;
+  margin: 10px 0px;
   overflow-x: auto;
   white-space: nowrap;
   flex-wrap: nowrap;
   justify-content: flex-start;
-  
-  /* ADD THESE TWO LINES */
-  padding: 15px 5px; /* Adds space at top/bottom so zoom isn't cut off */
-  overflow-y: hidden; /* Prevents vertical scrollbars from appearing during zoom */
+  padding: 15px 5px; /* Space for the hover zoom effect */
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
 }
 
-/* Hide scrollbar for Chrome, Safari and Opera */
+/* Hide Scrollbars */
 .no-scrollbar::-webkit-scrollbar,
 .explore-menu-list::-webkit-scrollbar {
   display: none;
 }
 
-/* Hide scrollbar for IE, Edge and Firefox */
 .no-scrollbar {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
-/* ---------- CATEGORY ITEM ---------- */
+/* ===========================================================
+   CATEGORY ITEM STYLE
+   =========================================================== */
 .explore-menu-list-item {
   flex: 0 0 auto;
   cursor: pointer;
-  /* ADD THIS LINE */
-  padding: 5px; /* Gives space for the shadow and zoom scale */
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .explore-menu-list-item img {
@@ -80,39 +88,39 @@ body, html {
   height: 70px;
   object-fit: cover;
   border-radius: 50%;
-  border: 2px solid transparent;
-  /* Ensure the transform starts from the center */
-  transform-origin: center; 
-  transition: transform 0.3s ease-in-out, border 0.3s ease, box-shadow 0.3s ease;
-  
-  /* ADD THIS TO PREVENT WHITE EDGES */
-  display: block; 
-  backface-visibility: hidden; /* Smooths out hardware acceleration glitches */
+  border: 2px solid #f0f0f0;
+  transform-origin: center;
+  transition: all 0.3s ease-in-out;
+  display: block;
+  backface-visibility: hidden;
+  background-color: #f9f9f9; /* Fallback while loading */
 }
 
 /* Zoom Hover Effect */
 .explore-menu-list-item:hover img {
-  transform: scale(1.15); /* Zooms in */
-  border: 2px solid #ff4500; /* Adds brand color circle */
-  box-shadow: 0px 4px 15px rgba(255, 69, 0, 0.3); /* Adds a soft glow */
+  transform: scale(1.12);
+  border: 2px solid #ff4500;
+  box-shadow: 0px 4px 15px rgba(255, 69, 0, 0.2);
 }
 
 /* Click Feedback */
 .explore-menu-list-item:active img {
-  transform: scale(0.95); /* Slight shrink on click */
+  transform: scale(0.95);
 }
 
 .explore-menu-list-item p {
   margin-top: 10px;
-  color: #961717;
-  font-size: 16px;
+  color: #444444; /* Dark gray for readability */
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 0;
 }
 
 /* Line under navbar */
 .explore-menu hr {
-  margin: 2px 0px;
+  margin: 5px 0px;
   height: 2px;
-  background-color: #e2e2e2;
+  background-color: #f0f0f0;
   border: none;
 }
 
@@ -120,8 +128,12 @@ body, html {
    📱 TABLET RESPONSIVE (600px – 900px)
    =========================================================== */
 @media (min-width: 600px) and (max-width: 900px) {
+  .explore-menu {
+    padding: 0 1.5rem;
+  }
+  
   .explore-menu-list {
-    gap: 15px;
+    gap: 20px;
   }
 
   .explore-menu-list-item img {
@@ -129,8 +141,8 @@ body, html {
     height: 85px;
   }
 
-  .explore-menu-list-item p {
-    font-size: 15px;
+  .explore-menu h1 {
+    font-size: 2rem;
   }
 }
 
@@ -138,12 +150,13 @@ body, html {
    🖥️ DESKTOP RESPONSIVE (900px+)
    =========================================================== */
 @media (min-width: 900px) {
+  .explore-menu {
+    padding: 0 5rem;
+  }
+
   .explore-menu-list {
-    gap: 30px;
-    /* If you want desktop to scroll like mobile, keep 'nowrap'. 
-       If you want a grid, change 'nowrap' to 'wrap' below. */
-    flex-wrap: nowrap; 
-    justify-content: flex-start;
+    gap: 35px;
+    justify-content: center; /* Center items on large screens */
   }
 
   .explore-menu-list-item img {
@@ -153,6 +166,10 @@ body, html {
 
   .explore-menu-list-item p {
     font-size: 16px;
-    font-weight: 500;
+  }
+
+  .explore-menu h1 {
+    font-size: 2.5rem;
+    margin-top: 30px;
   }
 }

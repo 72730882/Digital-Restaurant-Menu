@@ -3,6 +3,10 @@
 @tailwind utilities;
 
 /* Your custom styles (optional) */
+:root {
+  /* This tells the browser the app is light mode only */
+  color-scheme: light;
+}
 * {
   padding: 0;
   margin: 0;
@@ -13,6 +17,11 @@ body {
   min-height: 100vh;
   background-color: #fff;
   font-family: 'Inter', sans-serif;
+  background-color: #ffffff !important;
+  color: #262626 !important;
+}
+.home-container {
+  background-color: #ffffff !important;
 }
 
 a {
