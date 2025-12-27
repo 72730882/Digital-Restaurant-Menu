@@ -5,16 +5,58 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     
     <meta name="theme-color" content="#ffffff">
-    
     <meta name="color-scheme" content="light">
-    
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
 
     <title>Naflet Hotel Menu</title>
+
+    <style>
+      /* Prevent flickering before JS loads */
+      html, body, #root {
+        background-color: #ffffff !important;
+        color: #262626 !important;
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+
+    <script>
+      (function() {
+        function applyForceWhite() {
+          const body = document.body;
+          const html = document.documentElement;
+          const root = document.getElementById('root');
+          
+          const forceStyle = (el) => {
+            if (el) {
+              el.style.setProperty('background-color', '#ffffff', 'important');
+              el.style.setProperty('background', '#ffffff', 'important');
+              el.style.setProperty('color', '#262626', 'important');
+            }
+          };
+
+          forceStyle(html);
+          forceStyle(body);
+          forceStyle(root);
+        }
+
+        // Run immediately
+        applyForceWhite();
+
+        // Run when the window loads
+        window.addEventListener('load', applyForceWhite);
+
+        // Run every 500ms for 5 seconds to fight aggressive QR apps
+        let count = 0;
+        const interval = setInterval(() => {
+          applyForceWhite();
+          count++;
+          if (count > 10) clearInterval(interval);
+        }, 500);
+      })();
+    </script>
   </body>
 </html>
