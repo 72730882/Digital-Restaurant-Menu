@@ -1,47 +1,50 @@
 /* Footer Container */
 .footer {
-  background: #1a1a1a;
-  color: #ffffff;
+  /* Force dark background so it doesn't turn white on mobile */
+  background: #1a1a1a !important; 
+  color: #ffffff !important;
   display: flex;
   flex-direction: column;
-  padding: 25px 60px; /* Minimized padding */
-  gap: 20px;
+  padding: 15px 20px; /* Reduced vertical and horizontal padding */
   width: 100%;
-  border-top: 2px solid #ff4500;
+  border-top: 3px solid #ff4500;
   font-family: 'Poppins', sans-serif;
+  box-sizing: border-box;
 }
 
 /* Top container */
 .footer-top {
   display: flex;
   justify-content: space-between;
+  align-items: flex-start;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 15px; /* Reduced gap */
 }
 
-/* Left Section - Always Left Aligned */
+/* Left Section */
 .footer-left {
   display: flex;
   flex-direction: column;
-  gap: 10px; /* Tighter gap */
+  gap: 7px; /* Very tight gap for mobile */
   text-align: left;
 }
 
 .footer-left p {
   display: flex;
   align-items: center;
-  gap: 12px;
-  opacity: 0.9;
-  font-size: 14px; /* Slightly smaller text */
+  gap: 10px;
+  color: #ffffff !important; /* Force text white */
+  font-size: 13px; /* Smaller text for compact look */
+  margin: 0; /* Remove default margins */
 }
 
 .footer-left .icon {
   color: #ff4500;
-  font-size: 16px;
+  font-size: 14px;
 }
 
 .map-link {
-  color: #ff4500;
+  color: #ff4500 !important;
   text-decoration: none;
   font-weight: 500;
 }
@@ -49,17 +52,16 @@
 /* Right Section - Social Icons */
 .footer-right {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   align-items: center;
-  justify-content: flex-start; /* Ensure left alignment on wrap */
 }
 
 .social {
-  font-size: 16px;
-  color: white;
+  font-size: 14px;
+  color: white !important;
   background: #333;
-  width: 38px; /* Minimized icon size */
-  height: 38px;
+  width: 32px; /* Smaller icons */
+  height: 32px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -69,40 +71,43 @@
 
 .social:hover {
   background: #ff4500;
-  transform: translateY(-3px);
+  transform: translateY(-2px);
 }
 
-/* Copyright Section - Lowercase/Normal Case */
+/* Copyright Section */
 .footer-copy {
-  text-align: left; /* Aligned left */
-  font-size: 13px;
-  opacity: 0.5;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-  padding-top: 15px;
+  text-align: left;
+  font-size: 11px; /* Smaller copyright */
+  color: #ffffff !important;
+  opacity: 0.4;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 10px;
   margin-top: 5px;
-  text-transform: none; /* Removed uppercase */
 }
 
 /* 🌐 RESPONSIVE DESIGN */
 
-@media (min-width: 768px) {
+@media (max-width: 600px) {
   .footer {
-    padding: 30px 5rem;
+    padding: 20px 15px; /* Even tighter on mobile */
   }
-}
-
-/* Mobile — Force left alignment */
-@media (max-width: 599px) {
+  
   .footer-top {
-    flex-direction: column;
-    align-items: flex-start; /* Keep items to the left */
+    flex-direction: row; /* Keep social icons next to info if space allows, or column */
+    justify-content: space-between;
   }
 
   .footer-left {
-    align-items: flex-start;
+    gap: 5px; /* Smallest gap between text lines */
   }
 
   .footer-left p {
-    justify-content: flex-start;
+    font-size: 12px; /* Extra small on phones */
+  }
+}
+
+@media (min-width: 768px) {
+  .footer {
+    padding: 20px 5rem;
   }
 }

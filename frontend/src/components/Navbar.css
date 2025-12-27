@@ -45,14 +45,14 @@ body, html {
 .explore-menu-list {
   display: flex;
   align-items: center;
-  gap: 8px; /* Reduced gap for mobile */
+  gap: 10px; /* Reduced gap for mobile */
   text-align: center;
-  margin: 10px 0px;
+  margin: 0px 0px;
   overflow-x: auto;
   white-space: nowrap;
   flex-wrap: nowrap;
   justify-content: flex-start;
-  padding: 10px 2px; 
+  padding: 0px 2px; 
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
 }
@@ -79,8 +79,8 @@ body, html {
 }
 
 .explore-menu-list-item img {
-  width: 80px;  /* Increased circle size for phone */
-  height: 80px; /* Increased circle size for phone */
+  width: 65px;  /* Increased circle size for phone */
+  height: 65px; /* Increased circle size for phone */
   object-fit: cover;
   border-radius: 50%;
   border: 2px solid #f0f0f0;
