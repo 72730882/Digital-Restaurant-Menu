@@ -3,35 +3,31 @@ import "./Navbar.css";
 import axios from "axios";
 import allImage from "../assets/all.png";
 
-
 const Navbar = ({ setSelectedCategory }) => {
   const [categories, setCategories] = useState([]);
+  // Pull the base URL from .env
+  const url = import.meta.env.VITE_BACKEND_URL;
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/category/list")
+      .get(`${url}/api/category/list`)
       .then((res) => setCategories(res.data.data))
       .catch((err) => console.log(err));
-  }, []);
+  }, [url]);
 
   return (
     <div className="explore-menu">
       <h1>WelCome TO Naflet Hotel </h1>
-
       <div className="explore-menu-list no-scrollbar">
-
-        {/* ⭐ ALL ITEMS BUTTON */}
         <div
           className="explore-menu-list-item"
           onClick={() => setSelectedCategory("")}
           style={{ cursor: "pointer" }}
         >
           <img src={allImage} alt="All" />
-
           <p>All</p>
         </div>
 
-        {/* ⭐ CATEGORY LIST FROM DATABASE */}
         {categories.map((cat) => (
           <div
             key={cat._id}
@@ -44,7 +40,6 @@ const Navbar = ({ setSelectedCategory }) => {
           </div>
         ))}
       </div>
-
       <hr />
     </div>
   );

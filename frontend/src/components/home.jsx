@@ -6,6 +6,8 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const Home = ({ selectedCategory }) => {
   const [foods, setFoods] = useState([]);
+  // Pull the base URL from .env
+  const url = import.meta.env.VITE_BACKEND_URL;
 
   useEffect(() => {
     fetchFoods();
@@ -13,7 +15,8 @@ const Home = ({ selectedCategory }) => {
 
   const fetchFoods = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/food/list");
+      // Use backticks (`) and the url variable
+      const res = await axios.get(`${url}/api/food/list`);
       if (res.data.success) {
         setFoods(res.data.data);
       }
@@ -28,45 +31,24 @@ const Home = ({ selectedCategory }) => {
 
   return (
     <div className="home-container">
-      {/* --- MOVABLE BACKGROUND DECOR --- */}
       <div className="home-bg-decor">
-        {/* Circle 1: Drifts and Rotates */}
         <motion.div 
           animate={{ x: [0, 40, 0], y: [0, 60, 0], rotate: [0, 15, 0] }}
           transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
           className="decor-circle circle-1" 
         />
-        
-        {/* Circle 2: Drifts in opposite direction */}
         <motion.div 
           animate={{ x: [0, -50, 0], y: [0, -30, 0] }}
           transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
           className="decor-circle circle-2" 
         />
-
         <div className="big-bullets">
-          {/* Bullet 1: Pulsates scale */}
-          <motion.div 
-            animate={{ scale: [1, 1.2, 1] }} 
-            transition={{ duration: 8, repeat: Infinity }} 
-            className="bullet b1" 
-          />
-          {/* Bullet 2: Moves up and down */}
-          <motion.div 
-            animate={{ y: [0, -50, 0] }} 
-            transition={{ duration: 12, repeat: Infinity }} 
-            className="bullet b2" 
-          />
-          {/* Bullet 3: Fades in and out */}
-          <motion.div 
-            animate={{ opacity: [0.03, 0.1, 0.03] }} 
-            transition={{ duration: 6, repeat: Infinity }} 
-            className="bullet b3" 
-          />
+          <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 8, repeat: Infinity }} className="bullet b1" />
+          <motion.div animate={{ y: [0, -50, 0] }} transition={{ duration: 12, repeat: Infinity }} className="bullet b2" />
+          <motion.div animate={{ opacity: [0.03, 0.1, 0.03] }} transition={{ duration: 6, repeat: Infinity }} className="bullet b3" />
         </div>
       </div>
 
-      {/* Title with entrance effect */}
       <motion.h2 
         key={selectedCategory}
         initial={{ opacity: 0, y: -20 }}
@@ -77,17 +59,9 @@ const Home = ({ selectedCategory }) => {
       </motion.h2>
 
       <AnimatePresence mode="wait">
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="cards-grid"
-        >
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="cards-grid">
           {filteredFoods.map((item) => (
-            <motion.div 
-              key={item._id} 
-              className="card"
-              whileHover={{ y: -5 }}
-            >
+            <motion.div key={item._id} className="card" whileHover={{ y: -5 }}>
               <div className="image-wrapper">
                 <img src={item.image} alt={item.name} className="card-img" />
                 <div className="price-tag">{item.price} ETB</div>
