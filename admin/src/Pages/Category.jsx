@@ -29,6 +29,20 @@ const CategoryManager = ({ token }) => {
     });
   };
 
+  const getImageUrl = (image) => {
+    if (!image) return "";
+    if (typeof image !== "string") return "";
+    if (image.startsWith("http://") || image.startsWith("https://") || image.startsWith("data:")) {
+      return image;
+    }
+    const cleanBackend = backendUrl.replace(/\/+$/, "");
+    const cleanPath = image.startsWith("/") ? image : `/${image}`;
+    if (cleanPath.startsWith("/images/")) {
+      return `${cleanBackend}${cleanPath}`;
+    }
+    return `${cleanBackend}/images${cleanPath}`;
+  };
+
   // Fetch all categories
   const fetchCategories = async () => {
     try {
@@ -217,9 +231,13 @@ const CategoryManager = ({ token }) => {
               {/* Image */}
               <div className="flex justify-center">
                 <img
-                  src={category.image}
+                  src={getImageUrl(category.image)}
                   alt={category.name}
                   className="w-16 h-16 object-cover rounded-md"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=100&q=80";
+                  }}
                 />
               </div>
 
@@ -346,7 +364,7 @@ const CategoryManager = ({ token }) => {
                   src={
                     updatedData.image
                       ? URL.createObjectURL(updatedData.image)
-                      : editingCategory.image
+                      : getImageUrl(editingCategory.image)
                   }
                   alt="Preview"
                   className="w-24 h-24 object-cover rounded-md border"

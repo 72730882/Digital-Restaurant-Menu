@@ -7,21 +7,33 @@ import { motion } from "framer-motion";
 
 const Navbar = ({ setSelectedCategory }) => {
   const [categories, setCategories] = useState([]);
-  const url = import.meta.env.VITE_BACKEND_URL;
+  const url = (import.meta.env.VITE_BACKEND_URL || "http://localhost:5000").replace(/\/+$/, "");
 
   const getOptimizedIcon = (imageUrl) => {
-    if (!imageUrl) return "";
+    if (!imageUrl) return allImage;
+    if (typeof imageUrl !== "string") return allImage;
     if (imageUrl.includes("cloudinary.com")) {
-      return imageUrl.replace("/upload/", "/upload/w_200,q_auto,f_auto/");
+      return imageUrl.replace(/^http:\/\//i, "https://").replace("/upload/", "/upload/w_200,q_auto,f_auto/");
     }
-    return imageUrl;
+    if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://") || imageUrl.startsWith("data:")) {
+      return imageUrl;
+    }
+    const cleanPath = imageUrl.startsWith("/") ? imageUrl : `/${imageUrl}`;
+    if (cleanPath.startsWith("/images/")) {
+      return `${url}${cleanPath}`;
+    }
+    return `${url}/images${cleanPath}`;
   };
 
   useEffect(() => {
     axios
       .get(`${url}/api/category/list`)
-      .then((res) => setCategories(res.data.data))
-      .catch((err) => console.log(err));
+      .then((res) => {
+        if (res.data.success && Array.isArray(res.data.data)) {
+          setCategories(res.data.data);
+        }
+      })
+      .catch((err) => console.error("Error fetching categories:", err));
   }, [url]);
 
   return (
@@ -59,6 +71,10 @@ const Navbar = ({ setSelectedCategory }) => {
               src={getOptimizedIcon(cat.image)} 
               alt={cat.name} 
               loading="lazy" 
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = allImage;
+              }}
             />
             <p>{cat.name}</p>
           </div>

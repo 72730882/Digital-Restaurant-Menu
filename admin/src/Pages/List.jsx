@@ -78,12 +78,26 @@ const List = ({ token }) => {
     }
   };
 
+  const getImageUrl = (image) => {
+    if (!image) return "";
+    if (typeof image !== "string") return "";
+    if (image.startsWith("http://") || image.startsWith("https://") || image.startsWith("data:")) {
+      return image;
+    }
+    const cleanBackend = backendUrl.replace(/\/+$/, "");
+    const cleanPath = image.startsWith("/") ? image : `/${image}`;
+    if (cleanPath.startsWith("/images/")) {
+      return `${cleanBackend}${cleanPath}`;
+    }
+    return `${cleanBackend}/images${cleanPath}`;
+  };
+
   // Start editing selected food
   const startEdit = (food) => {
     setEditingFood(food);
     setUpdatedData({
       name: food.name,
-      category: food.category?._id || "",
+      category: food.category?._id || (typeof food.category === "string" ? food.category : ""),
       price: food.price,
     });
     setNewImageFile(null);
@@ -97,42 +111,42 @@ const List = ({ token }) => {
 
   // Save edited food
   const saveEdit = async () => {
-  try {
-    setIsUploading(true);
+    try {
+      setIsUploading(true);
 
-    const formData = new FormData();
-    formData.append("id", editingFood._id);
-    formData.append("name", updatedData.name);
-    formData.append("category", updatedData.category);
-    formData.append("price", updatedData.price);
+      const formData = new FormData();
+      formData.append("id", editingFood._id);
+      formData.append("name", updatedData.name.trim());
+      formData.append("category", updatedData.category);
+      formData.append("price", updatedData.price);
 
-    // ONLY append the actual file object if a new one was selected
-    if (newImageFile) {
-      formData.append("image", newImageFile);
+      // ONLY append the actual file object if a new one was selected
+      if (newImageFile) {
+        formData.append("image", newImageFile);
+      }
+
+      const response = await axios.post(`${backendUrl}/api/food/update`, formData, {
+        headers: { 
+          token,
+        },
+      });
+
+      setIsUploading(false);
+      if (response.data.success) {
+        toast.success("Food updated successfully!");
+        setEditingFood(null);
+        setNewImageFile(null);
+        fetchList();
+      } else {
+        toast.error(response.data.message || "Failed to update food");
+      }
+    } catch (error) {
+      setIsUploading(false);
+      console.error(error);
+      toast.error(error.response?.data?.message || "Failed to update food");
     }
+  };
 
-    const response = await axios.post(`${backendUrl}/api/food/update`, formData, {
-      headers: { 
-        token,
-        "Content-Type": "multipart/form-data" 
-      },
-    });
-
-    setIsUploading(false);
-    if (response.data.success) {
-      toast.success("Food updated successfully!");
-      setEditingFood(null);
-      setNewImageFile(null);
-      fetchList();
-    } else {
-      toast.error(response.data.message);
-    }
-  } catch (error) {
-    setIsUploading(false);
-    console.error(error);
-    toast.error("Failed to update food");
-  }
-};
   useEffect(() => {
     fetchList();
     fetchCategories();
@@ -158,13 +172,17 @@ const List = ({ token }) => {
           className="grid grid-cols-[1fr_2fr_1fr_1fr_1fr] items-center border-b py-3 px-4 text-sm md:text-base hover:bg-gray-50"
         >
           <img
-            src={newImageFile ? URL.createObjectURL(newImageFile) : item.image}
+            src={getImageUrl(item.image)}
             alt={item.name}
             className="w-14 h-14 object-cover rounded-md"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=100&q=80";
+            }}
           />
           <p>{item.name}</p>
           <p>{item?.category?.name || "N/A"}</p>
-          <p>${item.price}</p>
+          <p>{item.price} ETB</p>
           <div className="flex items-center justify-center gap-3">
             <button
               onClick={() => startEdit(item)}
@@ -251,7 +269,7 @@ const List = ({ token }) => {
                   src={
                     newImageFile
                       ? URL.createObjectURL(newImageFile)
-                      : editingFood.image
+                      : getImageUrl(editingFood.image)
                   }
                   alt="Preview"
                   className="w-24 h-24 object-cover rounded-md border mx-auto"

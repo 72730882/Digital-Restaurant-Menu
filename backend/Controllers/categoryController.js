@@ -1,30 +1,42 @@
 import categoryModel from "../Models/categoryModel.js";
 import { v2 as cloudinary } from "cloudinary";
+import connectCloudinary from "../config/cloudinary.js";
 
 // ADD CATEGORY
 const addCategory = async (req, res) => {
   try {
-    const { name, image } = req.body; // image should be Base64
+    await connectCloudinary();
+    const { name, image } = req.body; // image should be Base64 or URL
 
     if (!image) {
       return res.json({ success: false, message: "Image is required" });
     }
 
-    // Upload image to Cloudinary
-    const result = await cloudinary.uploader.upload(image, { folder: "categories" });
+    let imageUrl = image;
+    let imagePublicId = "";
+
+    // If Base64, upload to Cloudinary
+    if (typeof image === "string" && image.startsWith("data:")) {
+      const result = await cloudinary.uploader.upload(image, { folder: "categories" });
+      imageUrl = result.secure_url;
+      imagePublicId = result.public_id;
+    }
 
     const category = new categoryModel({
-      name,
-      image: result.secure_url,
-      imagePublicId: result.public_id,
+      name: name?.trim(),
+      image: imageUrl,
+      imagePublicId,
     });
 
     await category.save();
 
     res.json({ success: true, message: "Category added successfully", data: category });
   } catch (error) {
-    console.error(error);
-    res.json({ success: false, message: "Category alredy Added" });
+    console.error("Add Category Error:", error);
+    if (error.code === 11000) {
+      return res.json({ success: false, message: "Category already exists" });
+    }
+    res.json({ success: false, message: error.message || "Error adding category" });
   }
 };
 
@@ -34,14 +46,15 @@ const listCategory = async (req, res) => {
     const categories = await categoryModel.find({});
     res.json({ success: true, data: categories });
   } catch (error) {
-    console.error(error);
-    res.json({ success: false, message: "Error fetching categories" });
+    console.error("List Categories Error:", error);
+    res.json({ success: false, message: "Error fetching categories", data: [] });
   }
 };
 
 // REMOVE CATEGORY
 const removeCategory = async (req, res) => {
   try {
+    await connectCloudinary();
     const { id } = req.body;
 
     if (!id) return res.json({ success: false, message: "Category ID is required" });
@@ -51,13 +64,17 @@ const removeCategory = async (req, res) => {
 
     // Delete image from Cloudinary
     if (category.imagePublicId) {
-      await cloudinary.uploader.destroy(category.imagePublicId);
+      try {
+        await cloudinary.uploader.destroy(category.imagePublicId);
+      } catch (destroyErr) {
+        console.warn("Could not delete category image from Cloudinary:", destroyErr);
+      }
     }
 
     await categoryModel.findByIdAndDelete(id);
     res.json({ success: true, message: "Category removed successfully" });
   } catch (error) {
-    console.error(error);
+    console.error("Remove Category Error:", error);
     res.json({ success: false, message: "Error removing category" });
   }
 };
@@ -65,37 +82,46 @@ const removeCategory = async (req, res) => {
 // UPDATE CATEGORY
 const updateCategory = async (req, res) => {
   try {
+    await connectCloudinary();
     const { id, name, image, imagePublicId } = req.body;
 
     if (!id) return res.json({ success: false, message: "Category ID is required" });
 
-    let updatedData = { name };
+    let updatedData = { name: name?.trim() };
     let newImageUrl = image;
     let newImagePublicId = imagePublicId;
 
     // If new image is Base64
-    if (image && typeof image === "string" && image.startsWith("data:image")) {
+    if (image && typeof image === "string" && image.startsWith("data:")) {
       const uploadRes = await cloudinary.uploader.upload(image, { folder: "categories" });
 
       // Delete old image if exists
       if (imagePublicId) {
-        await cloudinary.uploader.destroy(imagePublicId);
+        try {
+          await cloudinary.uploader.destroy(imagePublicId);
+        } catch (destroyErr) {
+          console.warn("Could not delete old category image:", destroyErr);
+        }
       }
 
       newImageUrl = uploadRes.secure_url;
       newImagePublicId = uploadRes.public_id;
     }
 
-    await categoryModel.findByIdAndUpdate(id, {
-      ...updatedData,
-      image: newImageUrl,
-      imagePublicId: newImagePublicId,
-    });
+    const updated = await categoryModel.findByIdAndUpdate(
+      id,
+      {
+        ...updatedData,
+        image: newImageUrl,
+        imagePublicId: newImagePublicId,
+      },
+      { new: true }
+    );
 
-    res.json({ success: true, message: "Category updated successfully" });
+    res.json({ success: true, message: "Category updated successfully", data: updated });
   } catch (error) {
-    console.error(error);
-    res.json({ success: false, message: "Error updating category" });
+    console.error("Update Category Error:", error);
+    res.json({ success: false, message: error.message || "Error updating category" });
   }
 };
 

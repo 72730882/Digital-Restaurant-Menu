@@ -6,8 +6,10 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const Home = ({ selectedCategory }) => {
   const [foods, setFoods] = useState([]);
-  // Pull the base URL from .env
-  const url = import.meta.env.VITE_BACKEND_URL;
+  const [loading, setLoading] = useState(true);
+
+  // Pull the base URL from .env with fallback
+  const url = (import.meta.env.VITE_BACKEND_URL || "http://localhost:5000").replace(/\/+$/, "");
 
   useEffect(() => {
     fetchFoods();
@@ -15,18 +17,49 @@ const Home = ({ selectedCategory }) => {
 
   const fetchFoods = async () => {
     try {
-      // Use backticks (`) and the url variable
+      setLoading(true);
       const res = await axios.get(`${url}/api/food/list`);
-      if (res.data.success) {
+      if (res.data.success && Array.isArray(res.data.data)) {
         setFoods(res.data.data);
       }
     } catch (error) {
-      console.log("Error fetching foods:", error);
+      console.error("Error fetching foods:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
+  const getImageUrl = (image) => {
+    if (!image || typeof image !== "string") return "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&q=80";
+    if (image.startsWith("data:")) return image;
+    if (image.startsWith("http://localhost") || image.startsWith("http://127.0.0.1")) return image;
+    if (image.includes("cloudinary.com")) {
+      return image.replace(/^http:\/\//i, "https://");
+    }
+    if (image.startsWith("http://") || image.startsWith("https://")) {
+      return image;
+    }
+    const cleanPath = image.startsWith("/") ? image : `/${image}`;
+    if (cleanPath.startsWith("/images/")) {
+      return `${url}${cleanPath}`;
+    }
+    return `${url}/images${cleanPath}`;
+  };
+
   const filteredFoods = selectedCategory
-    ? foods.filter(food => food.category?.name === selectedCategory)
+    ? foods.filter((food) => {
+        if (!food.category) return false;
+        if (typeof food.category === "string") {
+          return (
+            food.category.toLowerCase() === selectedCategory.toLowerCase() ||
+            food.category === selectedCategory
+          );
+        }
+        return (
+          food.category.name?.toLowerCase() === selectedCategory.toLowerCase() ||
+          food.category._id === selectedCategory
+        );
+      })
     : foods;
 
   return (
@@ -58,19 +91,39 @@ const Home = ({ selectedCategory }) => {
         {selectedCategory ? selectedCategory : "House Specials"}
       </motion.h2>
 
-      <AnimatePresence mode="wait">
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="cards-grid">
-          {filteredFoods.map((item) => (
-            <motion.div key={item._id} className="card" whileHover={{ y: -5 }}>
-              <div className="image-wrapper">
-                <img src={item.image} alt={item.name} className="card-img" />
-                <div className="price-tag">{item.price} ETB</div>
-              </div>
-              <h3 className="card-title">{item.name}</h3>
+      {loading ? (
+        <div style={{ textAlign: "center", padding: "40px 0", color: "#666" }}>
+          <p>Loading menu items...</p>
+        </div>
+      ) : (
+        <AnimatePresence mode="wait">
+          {filteredFoods.length > 0 ? (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="cards-grid">
+              {filteredFoods.map((item) => (
+                <motion.div key={item._id} className="card" whileHover={{ y: -5 }}>
+                  <div className="image-wrapper">
+                    <img
+                      src={getImageUrl(item.image)}
+                      alt={item.name}
+                      className="card-img"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&q=80";
+                      }}
+                    />
+                    <div className="price-tag">{item.price} ETB</div>
+                  </div>
+                  <h3 className="card-title">{item.name}</h3>
+                </motion.div>
+              ))}
             </motion.div>
-          ))}
-        </motion.div>
-      </AnimatePresence>
+          ) : (
+            <div style={{ textAlign: "center", padding: "40px 0", color: "#777" }}>
+              <p>No dishes found in this category.</p>
+            </div>
+          )}
+        </AnimatePresence>
+      )}
     </div>
   );
 };

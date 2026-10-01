@@ -37,7 +37,7 @@ const Add = ({ token }) => {
       setIsUploading(true);
 
       const formData = new FormData();
-      formData.append("name", name);
+      formData.append("name", name.trim());
       formData.append("price", price);
       formData.append("category", category);
       formData.append("image", image);
@@ -45,7 +45,6 @@ const Add = ({ token }) => {
       const response = await axios.post(`${backendUrl}/api/food/add`, formData, {
         headers: {
           token,
-          "Content-Type": "multipart/form-data",
         },
       });
 
@@ -57,11 +56,13 @@ const Add = ({ token }) => {
         setPrice("");
         setCategory("");
         setImage(null);
-      } else toast.error(response.data.message);
+      } else {
+        toast.error(response.data.message || "Failed to add food");
+      }
     } catch (error) {
       setIsUploading(false);
       console.error(error);
-      toast.error("Error adding food");
+      toast.error(error.response?.data?.message || "Error adding food");
     }
   };
 

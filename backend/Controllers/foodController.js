@@ -1,6 +1,7 @@
 import foodModel from "../Models/foodModel.js";
 import jwt from "jsonwebtoken";
 import { v2 as cloudinary } from "cloudinary";
+import connectCloudinary from "../config/cloudinary.js";
 
 // Admin login
 const adminLogin = async (req, res) => {
@@ -13,7 +14,7 @@ const adminLogin = async (req, res) => {
       res.json({ success: false, message: "Invalid credentials" });
     }
   } catch (error) {
-    console.log(error);
+    console.error("Admin Login Error:", error);
     res.json({ success: false, message: error.message });
   }
 };
@@ -21,27 +22,38 @@ const adminLogin = async (req, res) => {
 // Add food
 const addFood = async (req, res) => {
   try {
+    await connectCloudinary();
     const { name, price, category } = req.body;
 
-    // Check if file exists in the request
-    if (!req.file) {
+    let imageUrl = "";
+    let imagePublicId = "";
+
+    // Check if file exists in the request (multipart buffer)
+    if (req.file && req.file.buffer) {
+      const fileBase64 = `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`;
+      const result = await cloudinary.uploader.upload(fileBase64, {
+        folder: "foods",
+      });
+      imageUrl = result.secure_url;
+      imagePublicId = result.public_id;
+    } else if (req.body.image && typeof req.body.image === "string" && req.body.image.startsWith("data:")) {
+      const result = await cloudinary.uploader.upload(req.body.image, {
+        folder: "foods",
+      });
+      imageUrl = result.secure_url;
+      imagePublicId = result.public_id;
+    } else if (req.body.image && typeof req.body.image === "string" && req.body.image.trim() !== "") {
+      imageUrl = req.body.image.trim();
+    } else {
       return res.json({ success: false, message: "Image is required" });
     }
 
-    // Convert buffer to Base64 for Cloudinary
-    const fileBase64 = `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`;
-
-    // Upload to Cloudinary
-    const result = await cloudinary.uploader.upload(fileBase64, {
-      folder: "foods",
-    });
-
     const food = new foodModel({
       name,
-      price,
+      price: Number(price) || 0,
       category,
-      image: result.secure_url,
-      imagePublicId: result.public_id,
+      image: imageUrl,
+      imagePublicId,
     });
 
     await food.save();
@@ -55,30 +67,41 @@ const addFood = async (req, res) => {
 // List all foods
 const listFood = async (req, res) => {
   try {
-    const foods = await foodModel.find({}).populate("category", "name");
+    let foods = [];
+    try {
+      foods = await foodModel.find({}).populate("category", "name");
+    } catch (popError) {
+      console.warn("Populate failed, falling back to unpopulated find:", popError);
+      foods = await foodModel.find({});
+    }
     res.json({ success: true, data: foods });
   } catch (error) {
-    console.log(error);
-    res.json({ success: false, message: "Error fetching foods" });
+    console.error("List Food Error:", error);
+    res.json({ success: false, message: "Error fetching foods", data: [] });
   }
 };
 
 // Remove food
 const removeFood = async (req, res) => {
   try {
+    await connectCloudinary();
     const { id } = req.body;
     const food = await foodModel.findById(id);
     if (!food) return res.json({ success: false, message: "Food not found" });
 
-    // Delete image from Cloudinary
+    // Delete image from Cloudinary if public ID exists
     if (food.imagePublicId) {
-      await cloudinary.uploader.destroy(food.imagePublicId);
+      try {
+        await cloudinary.uploader.destroy(food.imagePublicId);
+      } catch (destroyErr) {
+        console.warn("Could not delete image from Cloudinary:", destroyErr);
+      }
     }
 
     await foodModel.findByIdAndDelete(id);
     res.json({ success: true, message: "Food removed successfully" });
   } catch (error) {
-    console.log(error);
+    console.error("Remove Food Error:", error);
     res.json({ success: false, message: "Error removing food" });
   }
 };
@@ -86,6 +109,7 @@ const removeFood = async (req, res) => {
 // Update food
 const updateFood = async (req, res) => {
   try {
+    await connectCloudinary();
     const { id, name, price, category } = req.body;
 
     if (!id) return res.json({ success: false, message: "Food ID is required" });
@@ -96,18 +120,34 @@ const updateFood = async (req, res) => {
     let newImageUrl = food.image;
     let newImagePublicId = food.imagePublicId;
 
-    // Check if a new file was uploaded (same logic as addFood)
-    if (req.file) {
-      // Convert buffer to Base64 (since this worked for your addFood)
+    // Check if a new file was uploaded
+    if (req.file && req.file.buffer) {
       const fileBase64 = `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`;
-      
       const uploadRes = await cloudinary.uploader.upload(fileBase64, { 
         folder: "foods" 
       });
 
-      // DELETE the old image from Cloudinary to keep your storage clean
       if (food.imagePublicId) {
-        await cloudinary.uploader.destroy(food.imagePublicId);
+        try {
+          await cloudinary.uploader.destroy(food.imagePublicId);
+        } catch (destroyErr) {
+          console.warn("Could not delete old image:", destroyErr);
+        }
+      }
+
+      newImageUrl = uploadRes.secure_url;
+      newImagePublicId = uploadRes.public_id;
+    } else if (req.body.image && typeof req.body.image === "string" && req.body.image.startsWith("data:")) {
+      const uploadRes = await cloudinary.uploader.upload(req.body.image, { 
+        folder: "foods" 
+      });
+
+      if (food.imagePublicId) {
+        try {
+          await cloudinary.uploader.destroy(food.imagePublicId);
+        } catch (destroyErr) {
+          console.warn("Could not delete old image:", destroyErr);
+        }
       }
 
       newImageUrl = uploadRes.secure_url;
@@ -115,22 +155,24 @@ const updateFood = async (req, res) => {
     }
 
     // Update the database with new details
-    await foodModel.findByIdAndUpdate(id, {
-      name,
-      price,
-      category,
-      image: newImageUrl,
-      imagePublicId: newImagePublicId,
-    });
+    const updated = await foodModel.findByIdAndUpdate(
+      id,
+      {
+        name,
+        price: Number(price) || food.price,
+        category,
+        image: newImageUrl,
+        imagePublicId: newImagePublicId,
+      },
+      { new: true }
+    );
 
-    res.json({ success: true, message: "Food updated successfully" });
+    res.json({ success: true, message: "Food updated successfully", data: updated });
   } catch (error) {
     console.error("Update Food Error:", error);
-    res.json({ success: false, message: "Error updating food" });
+    res.json({ success: false, message: error.message || "Error updating food" });
   }
-
 };
 
-
-
 export { addFood, listFood, removeFood, updateFood, adminLogin };
+
