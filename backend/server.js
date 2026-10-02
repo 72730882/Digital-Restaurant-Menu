@@ -22,12 +22,25 @@ app.get("/", (req, res) => {
   res.send("Restaurant Menu API is running...");
 });
 
-// Add these lines before your routes
-
+// Database connection middleware for Serverless
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    console.error("Database connection error in middleware:", err.message);
+    return res.status(500).json({
+      success: false,
+      message: "Database connection failed. Please verify MONGO_URI in environment variables.",
+      error: err.message,
+      data: []
+    });
+  }
+});
 
 // api endpoints
-app.use("/api/food", foodRouter)
-app.use("/images", express.static('uploads'))
+app.use("/api/food", foodRouter);
+app.use("/images", express.static('uploads'));
 app.use("/api/category", categoryRouter);
 
 // Start server
